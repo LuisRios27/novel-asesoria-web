@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Administrador</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background-color: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <h1 style="margin: 0;">Panel de Administrador</h1>
+        <div>
+            <button id="create-user-btn" style="background-color: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; margin-right: 10px;">+ Crear Usuario</button>
+            <button id="logout-btn" style="background-color: #dc3545; color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer;">Cerrar Sesión</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h2>Lista de Estudiantes</h2>
+        <table id="student-table" style="width: 100%; border-collapse: collapse; margin-top: 20px; background: white; box-shadow: 0 0 10px rgba(0,0,0,0.05);">
+            <thead style="background-color: #343a40; color: white;">
+                <tr>
+                    <th style="padding: 10px;">ID</th>
+                    <th style="padding: 10px;">Nombres</th>
+                    <th style="padding: 10px;">Apellidos</th>
+                    <th style="padding: 10px;">Universidad</th>
+                    <th style="padding: 10px;">Carrera</th>
+                    <th style="padding: 10px;">Acciones</th>
+                </tr>
+            </thead>
+            <tbody style="text-align: center;"></tbody>
+        </table>
+    </div>
+
+    <div id="create-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 style="margin-top: 0; color: #333;">Nuevo Estudiante</h2>
+            <form id="create-user-form">
+                <input type="text" id="new-nombres" placeholder="Nombres" required>
+                <input type="text" id="new-apellidos" placeholder="Apellidos" required>
+                <input type="text" id="new-universidad" placeholder="Universidad" required>
+                <input type="text" id="new-carrera" placeholder="Carrera" required>
+                <hr style="width: 100%; border: 0.5px solid #ccc; margin: 15px 0;">
+                <input type="text" id="new-username" placeholder="Usuario de acceso (Ej: juanp)" required>
+                <input type="password" id="new-password" placeholder="Contraseña temporal" required>
+                
+                <button type="submit" class="save-btn">Guardar Estudiante</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

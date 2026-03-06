@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Estudiante - Nóvel Asesoría</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="estudiante-body">
+    
+    <nav class="navbar-estudiante">
+        <img src="logo-novel.png" alt="Logo Nóvel Asesoría" class="navbar-logo">
+        <button id="logout-btn" class="btn-logout">Cerrar Sesión</button>
+    </nav>
+
+    <div class="dashboard-container">
+        
+        <div class="profile-card">
+            <h2>Mi Perfil</h2>
+            <div class="profile-info">
+                <div class="info-group">
+                    <span class="label">Nombres</span>
+                    <span id="display-nombres" class="value">...</span>
+                </div>
+                <div class="info-group">
+                    <span class="label">Apellidos</span>
+                    <span id="display-apellidos" class="value">...</span>
+                </div>
+                <div class="info-group">
+                    <span class="label">Universidad</span>
+                    <span id="display-universidad" class="value">...</span>
+                </div>
+                <div class="info-group">
+                    <span class="label">Carrera</span>
+                    <span id="display-carrera" class="value">...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="timeline-section">
+            <h2>PROCESO DE ASESORIA</h2>
+            
+            <div class="carousel-container">
+                <button id="btn-prev" class="carousel-arrow">&#10094;</button> <div class="timeline-viewport" id="timeline-viewport">
+                    <div id="linea-tiempo"></div>
+                </div>
+                
+                <button id="btn-next" class="carousel-arrow">&#10095;</button> </div>
+        </div>
+
+    </div>
+
+    <script src="estudiante.js"></script>
+</body>
+</html>
