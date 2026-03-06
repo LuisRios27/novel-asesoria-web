@@ -1,5 +1,6 @@
 package com.novel.asesoria.services;
 
+import jakarta.annotation.PostConstruct;
 import com.novel.asesoria.models.Tramite;
 import com.novel.asesoria.models.Usuario;
 import com.novel.asesoria.repositories.TramiteRepository;
@@ -61,5 +62,22 @@ public class UsuarioService {
         }
 
         return usuarioGuardado;
+    }
+
+    @PostConstruct
+    public void crearAdminInicial() {
+        // Solo creamos el admin si la base de datos está completamente vacía
+        if (usuarioRepository.count() == 0) {
+            Usuario admin = new Usuario();
+            admin.setUsername("superadmin"); // Tu usuario de acceso
+            admin.setPassword("123456");     // Pon la contraseña que usabas localmente
+            admin.setRol("ADMIN");
+            admin.setNombres("Administrador");
+            admin.setApellidos("Principal");
+            // Si tu entidad Usuario requiere otros campos obligatorios, agrégalos aquí
+            
+            usuarioRepository.save(admin);
+            System.out.println("✅ Administrador inicial creado con éxito en la base de datos.");
+        }
     }
 }
