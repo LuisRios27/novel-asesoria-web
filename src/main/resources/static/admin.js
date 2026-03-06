@@ -120,16 +120,24 @@ document.getElementById("create-user-form").addEventListener("submit", function(
         },
         body: JSON.stringify(nuevoUsuario)
     })
+    
     .then(function(response) {
-        if (!response.ok) throw new Error("Error al guardar en base de datos");
-        return response.json();
+        if (!response.ok) {
+            // Si hay un error (ej. 400 Bad Request), leemos el texto que manda Java
+            return response.text().then(function(textoError) {
+                throw new Error(textoError); 
+            });
+        }
+        return response.json(); // Si todo está bien, seguimos
     })
     .then(function(usuarioGuardado) {
         alert("¡Estudiante creado con éxito! Ya puede iniciar sesión.");
-        modal.style.display = "none"; // Cerramos la ventana
-        location.reload(); // Recargamos la tabla para que aparezca
+        modal.style.display = "none"; 
+        location.reload(); 
     })
     .catch(function(error) {
-        alert("Error al crear el estudiante: " + error.message);
+        // Aquí mostraremos la alerta con el texto: "Error: El nombre de usuario ya está en uso."
+        alert(error.message); 
     });
+
 });

@@ -25,9 +25,16 @@ public class UsuarioController {
     private final UsuarioRepository usuarioRepository; // Añadimos el repositorio para buscar credenciales
 
     @PostMapping
-    public Usuario crearEstudiante(@RequestBody Usuario usuario) {
-        // Ahora llamamos al método inteligente
-        return usuarioService.crearUsuario(usuario); 
+    public ResponseEntity<?> crearUsuario(@RequestBody Usuario usuario) {
+        // 1. Verificamos si el nombre de usuario ya existe en la base de datos
+        if (usuarioRepository.existsByUsername(usuario.getUsername())) {
+            // Si existe, detenemos todo y devolvemos un error 400 (Bad Request)
+            return ResponseEntity.badRequest().body("Error: El nombre de usuario ya está en uso.");
+        }
+        
+        // 2. Si no existe, procedemos a guardarlo normalmente
+        Usuario nuevoUsuario = usuarioService.crearUsuario(usuario); // o usuarioRepository.save(usuario);
+        return ResponseEntity.ok(nuevoUsuario);
     }
 
     @GetMapping("/{usuarioId}/tramites")
