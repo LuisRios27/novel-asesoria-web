@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("display-universidad").textContent = usuario.universidad;
     document.getElementById("display-carrera").textContent = usuario.carrera;
 
+    var usuarioId = usuario.id;
     // 2. Pedimos los trámites al Backend
     fetch("/api/usuarios/" + usuarioId + "/tramites")
     .then(function(response) {
