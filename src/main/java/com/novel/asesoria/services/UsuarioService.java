@@ -8,6 +8,7 @@ import com.novel.asesoria.repositories.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @Service
@@ -16,6 +17,7 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final TramiteRepository tramiteRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public Usuario crearUsuario(Usuario usuario) {
@@ -23,11 +25,12 @@ public class UsuarioService {
         if (usuario.getRol() == null || usuario.getRol().isEmpty()) {
             usuario.setRol("ESTUDIANTE");
         }
+        // Tomamos la contraseña en texto plano, la pasamos por BCrypt, y la volvemos a guardar
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         
         // 2. Guardar al usuario
         Usuario usuarioGuardado = usuarioRepository.save(usuario);
 
-        // 3. ¡LA VERDADERA LÓGICA DE NÓVEL ASESORÍA!
         if ("ESTUDIANTE".equals(usuario.getRol())) {
             
             // Matriz con [Nombre del trámite, Descripción]
@@ -70,7 +73,13 @@ public class UsuarioService {
         if (usuarioRepository.count() == 0) {
             Usuario admin = new Usuario();
             admin.setUsername("superadmin"); // Tu usuario de acceso
-            admin.setPassword("123456");     // Pon la contraseña que usabas localmente
+            // Hasheamos la contraseña del admin en lugar de guardarla como texto plano
+            admin.setPassword(passwordEncoder.encode("123456"));
+            
+            // --- LÍNEA DE DIAGNÓSTICO (NUEVA) ---
+            System.out.println("🕵️ DIAGNÓSTICO - Hash generado en memoria: " + admin.getPassword());
+            // -----------------------------------
+            
             admin.setRol("ADMIN");
             admin.setNombres("Administrador");
             admin.setApellidos("Principal");

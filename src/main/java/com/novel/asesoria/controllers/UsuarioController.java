@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Map;
@@ -23,7 +24,7 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
     private final TramiteRepository tramiteRepository;
     private final UsuarioRepository usuarioRepository; // Añadimos el repositorio para buscar credenciales
-
+    private final PasswordEncoder passwordEncoder;
     @PostMapping
     public ResponseEntity<?> crearUsuario(@RequestBody Usuario usuario) {
         // 1. Verificamos si el nombre de usuario ya existe en la base de datos
@@ -48,14 +49,29 @@ public class UsuarioController {
         String username = credenciales.get("username");
         String password = credenciales.get("password");
 
-        // Buscamos en la base de datos si existe alguien con ese usuario y contraseña
-        Optional<Usuario> usuario = usuarioRepository.findByUsernameAndPassword(username, password);
+        System.out.println("🕵️ DIAGNÓSTICO LOGIN - 1. Frontend envió: Usuario [" + username + "] y Pass [" + password + "]");
 
-        if (usuario.isPresent()) {
-            // Forma moderna y limpia de devolver un 200 OK con los datos
-            return ResponseEntity.ok(usuario.get());
+        // Buscamos al usuario SOLO por su username
+        Optional<Usuario> usuarioOpt = usuarioRepository.findByUsername(username);
+
+        if (usuarioOpt.isEmpty()) {
+            System.out.println("❌ ERROR LOGIN - 2. No se encontró a nadie llamado '" + username + "' en la Base de Datos.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        System.out.println("✅ DIAGNÓSTICO LOGIN - 2. Usuario encontrado. Hash en DB: " + usuarioOpt.get().getPassword());
+
+        // Verificamos si encajan
+        boolean coincide = passwordEncoder.matches(password, usuarioOpt.get().getPassword());
+        System.out.println("🕵️ DIAGNÓSTICO LOGIN - 3. ¿El texto plano encaja con el Hash?: " + coincide);
+
+        if (coincide) {
+            Usuario usuarioAutenticado = usuarioOpt.get();
+            usuarioAutenticado.setPassword(null); // Borramos el hash por seguridad
+            System.out.println("✅ ÉXITO - 4. Login aprobado. Devolviendo datos seguros al frontend.");
+            return ResponseEntity.ok(usuarioAutenticado);
         } else {
-            // Forma moderna de devolver un error 401 sin cuerpo (sin ambigüedades)
+            System.out.println("❌ ERROR LOGIN - 4. La contraseña plana NO encaja con el hash.");
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }

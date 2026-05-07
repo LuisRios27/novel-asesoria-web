@@ -8,5 +8,5 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
     boolean existsByUsername(String username);
     
     // Spring crea el SQL automáticamente leyendo este nombre. Magia pura.
-    Optional<Usuario> findByUsernameAndPassword(String username, String password);
+    Optional<Usuario> findByUsername(String username);
 }
