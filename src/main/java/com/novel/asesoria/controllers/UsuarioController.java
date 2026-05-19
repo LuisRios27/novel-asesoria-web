@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
@@ -21,20 +23,22 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UsuarioController {
 
+    // Así se crea un logger profesional en Java.
+    // Le pasamos la clase actual para que en los logs sepas exactamente
+    // desde qué archivo vino cada mensaje.
+    private static final Logger logger = LoggerFactory.getLogger(UsuarioController.class);
+
     private final UsuarioService usuarioService;
     private final TramiteRepository tramiteRepository;
-    private final UsuarioRepository usuarioRepository; // Añadimos el repositorio para buscar credenciales
+    private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+
     @PostMapping
     public ResponseEntity<?> crearUsuario(@RequestBody Usuario usuario) {
-        // 1. Verificamos si el nombre de usuario ya existe en la base de datos
         if (usuarioRepository.existsByUsername(usuario.getUsername())) {
-            // Si existe, detenemos todo y devolvemos un error 400 (Bad Request)
             return ResponseEntity.badRequest().body("Error: El nombre de usuario ya está en uso.");
         }
-        
-        // 2. Si no existe, procedemos a guardarlo normalmente
-        Usuario nuevoUsuario = usuarioService.crearUsuario(usuario); // o usuarioRepository.save(usuario);
+        Usuario nuevoUsuario = usuarioService.crearUsuario(usuario);
         return ResponseEntity.ok(nuevoUsuario);
     }
 
@@ -43,39 +47,36 @@ public class UsuarioController {
         return tramiteRepository.findByUsuarioIdOrderByOrdenAsc(usuarioId);
     }
 
-    // --- EL NUEVO ENDPOINT DE LOGIN ---
     @PostMapping("/login")
     public ResponseEntity<Usuario> login(@RequestBody Map<String, String> credenciales) {
         String username = credenciales.get("username");
         String password = credenciales.get("password");
 
-        System.out.println("🕵️ DIAGNÓSTICO LOGIN - 1. Frontend envió: Usuario [" + username + "] y Pass [" + password + "]");
+        // DEBUG: solo aparece en desarrollo, nunca en producción.
+        // Nota: NUNCA logueamos la contraseña, ni siquiera en DEBUG.
+        logger.debug("Intento de login para el usuario: {}", username);
 
-        // Buscamos al usuario SOLO por su username
         Optional<Usuario> usuarioOpt = usuarioRepository.findByUsername(username);
 
         if (usuarioOpt.isEmpty()) {
-            System.out.println("❌ ERROR LOGIN - 2. No se encontró a nadie llamado '" + username + "' en la Base de Datos.");
+            // WARN porque es algo que vale la pena monitorear (intentos fallidos)
+            logger.warn("Intento de login fallido: usuario '{}' no encontrado", username);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        System.out.println("✅ DIAGNÓSTICO LOGIN - 2. Usuario encontrado. Hash en DB: " + usuarioOpt.get().getPassword());
-
-        // Verificamos si encajan
         boolean coincide = passwordEncoder.matches(password, usuarioOpt.get().getPassword());
-        System.out.println("🕵️ DIAGNÓSTICO LOGIN - 3. ¿El texto plano encaja con el Hash?: " + coincide);
 
         if (coincide) {
             Usuario usuarioAutenticado = usuarioOpt.get();
-            usuarioAutenticado.setPassword(null); // Borramos el hash por seguridad
-            System.out.println("✅ ÉXITO - 4. Login aprobado. Devolviendo datos seguros al frontend.");
+            usuarioAutenticado.setPassword(null);
+            logger.info("Login exitoso para el usuario: {}", username);
             return ResponseEntity.ok(usuarioAutenticado);
         } else {
-            System.out.println("❌ ERROR LOGIN - 4. La contraseña plana NO encaja con el hash.");
+            logger.warn("Intento de login fallido: contraseña incorrecta para '{}'", username);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
-    // Nuevo endpoint para que el Admin vea a todos los usuarios
+
     @GetMapping
     public List<Usuario> obtenerTodos() {
         return usuarioRepository.findAll();
@@ -83,7 +84,6 @@ public class UsuarioController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminarUsuario(@PathVariable Long id) {
-        // La magia de JPA: Al borrar el usuario, se borran sus trámites automáticamente
         usuarioRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }

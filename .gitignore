@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Configuración con datos sensibles - NUNCA subir a Git
+src/main/resources/application-dev.properties
+src/main/resources/application-prod.properties
