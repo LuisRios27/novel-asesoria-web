@@ -1,34 +1,338 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Nóvel Asesoría - Iniciar Sesión</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nóvel Asesoría — Portal de Seguimiento</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            background: #001428;
+        }
+
+        /* ── PANEL IZQUIERDO ── */
+        .left-panel {
+            width: 52%;
+            background: #001428;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 48px 56px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Círculos decorativos de fondo */
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            width: 480px;
+            height: 480px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.04);
+            top: -120px;
+            right: -180px;
+        }
+        .left-panel::after {
+            content: '';
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.06);
+            bottom: 40px;
+            left: -100px;
+        }
+
+        .brand-logo {
+            height: 56px;
+            width: auto;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+            align-self: flex-start; /* Evita que Flexbox estire la imagen horizontalmente */
+            object-fit: contain;    /* Asegura que el logo mantenga su proporción original intacta */
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .left-tagline {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 52px;
+            font-weight: 300;
+            color: #ffffff;
+            line-height: 1.15;
+            letter-spacing: -0.5px;
+            margin-bottom: 24px;
+        }
+
+        .left-tagline span {
+            color: #6ea8d8;
+            font-style: italic;
+        }
+
+        .left-description {
+            font-size: 14px;
+            font-weight: 300;
+            color: rgba(255,255,255,0.45);
+            line-height: 1.75;
+            max-width: 340px;
+        }
+
+        .left-footer {
+            position: relative;
+            z-index: 1;
+        }
+
+        .steps-row {
+            display: flex;
+            gap: 32px;
+        }
+
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .step-number {
+            font-size: 11px;
+            font-weight: 500;
+            color: #6ea8d8;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        .step-label {
+            font-size: 13px;
+            font-weight: 300;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* ── DIVISOR ── */
+        .divider {
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.08) 30%, rgba(255,255,255,0.08) 70%, transparent);
+            flex-shrink: 0;
+        }
+
+        /* ── PANEL DERECHO ── */
+        .right-panel {
+            flex: 1;
+            background: #f7f8fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 48px;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .login-heading {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 32px;
+            font-weight: 500;
+            color: #001428;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+        }
+
+        .login-subheading {
+            font-size: 13px;
+            font-weight: 300;
+            color: #8a96a3;
+            margin-bottom: 40px;
+        }
+
+        .field-group {
+            margin-bottom: 20px;
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 500;
+            color: #4a5568;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .field-group input {
+            width: 100%;
+            padding: 14px 16px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 300;
+            color: #001428;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .field-group input::placeholder {
+            color: #c5cdd8;
+        }
+
+        .field-group input:focus {
+            border-color: #2a6496;
+            box-shadow: 0 0 0 3px rgba(42, 100, 150, 0.08);
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 15px;
+            margin-top: 8px;
+            background: #001f42;
+            color: #ffffff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-login:hover {
+            background: #002d5c;
+        }
+
+        .btn-login:active {
+            transform: scale(0.99);
+        }
+
+        .btn-login:disabled {
+            background: #8a96a3;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .login-error {
+            display: none;
+            margin-top: 16px;
+            padding: 12px 16px;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #b91c1c;
+        }
+
+        .login-footer {
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            font-size: 12px;
+            color: #b0bac5;
+            font-weight: 300;
+        }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .left-panel { display: none; }
+            .divider { display: none; }
+            .right-panel {
+                background: #001428;
+                padding: 32px 24px;
+            }
+            .login-box {
+                background: #f7f8fa;
+                padding: 36px 28px;
+                border-radius: 16px;
+            }
+        }
+    </style>
 </head>
-<body class="login-body">
-    
-    <div class="login-wrapper">
-        <div class="login-card">
-            
-            <div class="login-header">
-                <img src="logo-novel.png" alt="Logo Nóvel Asesoría" class="login-logo">
-                <p>PORTAL DE SEGUIMIENTO DE ASESORIA</p>
+<body>
+
+    <!-- Panel izquierdo: identidad de marca -->
+    <div class="left-panel">
+        <img src="logo-novel.png" alt="Nóvel Asesoría" class="brand-logo">
+
+        <div class="left-content">
+            <h1 class="left-tagline">
+                Tu camino a<br>
+                estudiar en<br>
+                <span>Argentina</span>
+            </h1>
+            <p class="left-description">
+                Seguí el estado de tus trámites en tiempo real. 
+                Desde la convalidación de estudios hasta tu residencia, 
+                acompañamos cada paso del proceso.
+            </p>
+        </div>
+
+        <div class="left-footer">
+            <div class="steps-row">
+                <div class="step-item">
+                    <span class="step-number">01</span>
+                    <span class="step-label">Documentación</span>
+                </div>
+                <div class="step-item">
+                    <span class="step-number">02</span>
+                    <span class="step-label">Convalidación</span>
+                </div>
+                <div class="step-item">
+                    <span class="step-number">03</span>
+                    <span class="step-label">Residencia</span>
+                </div>
+                <div class="step-item">
+                    <span class="step-number">04</span>
+                    <span class="step-label">Universidad</span>
+                </div>
             </div>
-            
-            <form id="login-form" class="login-form">
-                <div class="input-group">
+        </div>
+    </div>
+
+    <!-- Divisor vertical -->
+    <div class="divider"></div>
+
+    <!-- Panel derecho: formulario -->
+    <div class="right-panel">
+        <div class="login-box">
+            <h2 class="login-heading">Bienvenido</h2>
+            <p class="login-subheading">Ingresá tus credenciales para continuar</p>
+
+            <form id="login-form">
+                <div class="field-group">
                     <label for="username">Usuario</label>
-                    <input type="text" id="username" placeholder="Ingresa tu usuario" required>
+                    <input type="text" id="username" placeholder="Tu nombre de usuario" required autocomplete="username">
                 </div>
-                
-                <div class="input-group">
+
+                <div class="field-group">
                     <label for="password">Contraseña</label>
-                    <input type="password" id="password" placeholder="Ingresa tu contraseña" required>
+                    <input type="password" id="password" placeholder="Tu contraseña" required autocomplete="current-password">
                 </div>
-                
-                <button type="submit" id="submit-btn" class="btn-primary">Ingresar</button>
+
+                <button type="submit" id="submit-btn" class="btn-login">Ingresar</button>
+
+                <div class="login-error" id="login-error">
+                    Usuario o contraseña incorrectos. Intentá nuevamente.
+                </div>
             </form>
-            
+
+            <div class="login-footer">
+                © 2026 Nóvel Asesoría · Portal de seguimiento de trámites
+            </div>
         </div>
     </div>
 

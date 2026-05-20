@@ -14,9 +14,22 @@ document.addEventListener("DOMContentLoaded", function() {
     document.getElementById("display-universidad").textContent = usuario.universidad;
     document.getElementById("display-carrera").textContent = usuario.carrera;
 
+    function authOptions(method, body) {
+        var token = localStorage.getItem("token");
+        var options = {
+            method: method || "GET",
+            headers: {
+                "Authorization": "Bearer " + token,
+                "Content-Type": "application/json"
+            }
+        };
+        if (body) options.body = JSON.stringify(body);
+        return options;
+    }
+
     var usuarioId = usuario.id;
     // 2. Pedimos los trámites al Backend
-    fetch("/api/usuarios/" + usuarioId + "/tramites")
+    fetch("/api/usuarios/" + usuarioId + "/tramites", authOptions())
     .then(function(response) {
         if (!response.ok) throw new Error("Error al obtener los trámites");
         return response.json();

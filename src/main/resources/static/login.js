@@ -1,33 +1,27 @@
 document.getElementById("submit-btn").addEventListener("click", function(event) {
-    // ¡NUNCA OLVIDAR ESTA LÍNEA EN FORMULARIOS!
-    event.preventDefault(); 
+    event.preventDefault();
 
     var usernameInput = document.getElementById("username").value;
     var passwordInput = document.getElementById("password").value;
 
     fetch("/api/usuarios/login", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            username: usernameInput,
-            password: passwordInput
-        })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: usernameInput, password: passwordInput })
     })
     .then(function(response) {
-        if (response.ok) {
-            return response.json();
-        } else {
-            throw new Error("Credenciales incorrectas");
-        }
+        if (response.ok) return response.json();
+        throw new Error("Credenciales incorrectas");
     })
-    .then(function(usuario) {
-        // Guardamos los datos en el navegador para usarlos en las otras pantallas
-        localStorage.setItem("usuarioId", usuario.id);
+    .then(function(respuesta) {
+        // El backend ahora devuelve { usuario: {...}, token: "..." }
+        var usuario = respuesta.usuario;
+        var token = respuesta.token;
+
+        // Guardamos el token y los datos del usuario
+        localStorage.setItem("token", token);
         localStorage.setItem("usuario", JSON.stringify(usuario));
 
-        // El gran viaje: Redirección según el rol
         if (usuario.rol === 'ADMIN') {
             window.location.href = "admin.html";
         } else {

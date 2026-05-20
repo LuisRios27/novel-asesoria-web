@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import com.novel.asesoria.config.JwtService;
+import java.util.HashMap;
+
 @RestController
 @RequestMapping("/api/usuarios")
 @CrossOrigin(origins = "*")
@@ -32,6 +35,7 @@ public class UsuarioController {
     private final TramiteRepository tramiteRepository;
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     @PostMapping
     public ResponseEntity<?> crearUsuario(@RequestBody Usuario usuario) {
@@ -48,18 +52,15 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Usuario> login(@RequestBody Map<String, String> credenciales) {
+    public ResponseEntity<?> login(@RequestBody Map<String, String> credenciales) {
         String username = credenciales.get("username");
         String password = credenciales.get("password");
 
-        // DEBUG: solo aparece en desarrollo, nunca en producción.
-        // Nota: NUNCA logueamos la contraseña, ni siquiera en DEBUG.
         logger.debug("Intento de login para el usuario: {}", username);
 
         Optional<Usuario> usuarioOpt = usuarioRepository.findByUsername(username);
 
         if (usuarioOpt.isEmpty()) {
-            // WARN porque es algo que vale la pena monitorear (intentos fallidos)
             logger.warn("Intento de login fallido: usuario '{}' no encontrado", username);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -68,9 +69,22 @@ public class UsuarioController {
 
         if (coincide) {
             Usuario usuarioAutenticado = usuarioOpt.get();
+
+            // Generamos el token JWT con el username y el rol
+            String token = jwtService.generarToken(
+                usuarioAutenticado.getUsername(),
+                usuarioAutenticado.getRol()
+            );
+
             usuarioAutenticado.setPassword(null);
+
+            // Devolvemos tanto los datos del usuario como el token
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("usuario", usuarioAutenticado);
+            respuesta.put("token", token);
+
             logger.info("Login exitoso para el usuario: {}", username);
-            return ResponseEntity.ok(usuarioAutenticado);
+            return ResponseEntity.ok(respuesta);
         } else {
             logger.warn("Intento de login fallido: contraseña incorrecta para '{}'", username);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
